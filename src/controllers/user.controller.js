@@ -5,20 +5,28 @@ import {uploadFileToCloudinary} from '../utils/cloudinary.js';
 import {ApiResponse} from '../utils/ApiResponse.js'
 
 const registerUser = asyncHandler(async (req, res) => {
-    const {username , email , fullName , password} = req.body;
+    const {fullName , email , username , password} = req.body;
+
+    console.log("Request body:", req.body);
+
+    console.log("Request files:", username);
 
     if(
-        [fullName, username, email, password].some((field)=> field?.trim() === "")
+        [fullName , email , password , username].some((field)=> field?.trim() === "")
     ){
         throw new ApiError(400, "All fields are required");
     }
 
-    const ExistedUser = User.findOne({
+    console.log("Username:", username);
+
+    const ExistedUser = await User.findOne({
         $or : [
-            {username: username.toLowerCase()},
-            {email: email.toLowerCase()}
+            {username: username},
+            {email: email}
         ]
     })
+
+    console.log("Existed User:", ExistedUser);
 
     if(ExistedUser){
         throw new ApiError(409, "Username or Email already exists");
@@ -26,6 +34,8 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const avatarLocalPath = req.files?.avatar[0]?.path;
     const coverImageLocalPath = req.files?.coverImage[0]?.path;
+
+    console.log("Avatar Local Path:", avatarLocalPath);
 
     if(!avatarLocalPath){
         throw new ApiError(400, "Avatar Image are required");
@@ -44,7 +54,7 @@ const registerUser = asyncHandler(async (req, res) => {
     } 
 
     const user = await User.create({
-        username : username.toLowerCase(),
+        username: username,
         email,
         fullName,
         password,
@@ -52,7 +62,7 @@ const registerUser = asyncHandler(async (req, res) => {
         coverImage: coverImage ? coverImage.url : null
     })
 
-    const CreatedUser = User.findById(user._id).select(
+    const CreatedUser = await User.findById(user._id).select(
         "-password -refreshToken"
     );
 
@@ -61,8 +71,14 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
 
+    console.log("Created User:", CreatedUser);
+
+    if (!CreatedUser) {
+        throw new ApiError(500, "SomeThing Went Wrong Registering User");
+    }
+
     return res.status(201).json(
-        new ApiResponse(200,CreatedUser,"User Registered Succesfully")
+        new ApiResponse(200, CreatedUser, "User Registered Succesfully")
     );
 });
 
