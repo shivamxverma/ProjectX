@@ -25,8 +25,6 @@ const userSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
-      default:
-        'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
       trim: true,
       required: true,
     },
@@ -62,9 +60,9 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-userSchema.methods.isPasswordCorrect = async function (password) {
-  return await bcrypt.compare(password, this.password);
-};
+userSchema.methods.isPasswordCorrect = async function(password){
+  return await bcrypt.compare(password, this.password)
+}
 
 userSchema.methods.generateAccessToken = function () {
   return jwt.sign(
