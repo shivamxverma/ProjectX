@@ -10,7 +10,6 @@ const subscriptionSchema = new Schema({
         ref : "User"
     }
 },{timestamps : true});
-
 const Subscription = mongoose.model("Subscription",subscriptionSchema);
 
 export default Subscription;
