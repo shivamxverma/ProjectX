@@ -1,6 +1,6 @@
 import asyncHandler from '../utils/asyncHandler.js';
 import { Subscription } from '../models/subscription.model.js';
-import { User } from '../models/user.model.js'; 
+// import { User } from '../models/user.model.js'; 
 
 const subscribeToChannel = asyncHandler(async (req, res) => {
     const { subscriber } = req.body;
@@ -49,6 +49,8 @@ const SubscriberCount = asyncHandler(async (req, res) => {
     
     res.status(200).json(apiResponse(200, 'Subscriber count retrieved successfully', { count }));
 });
+
+
 
 
 
